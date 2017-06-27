@@ -545,7 +545,7 @@ Request:
     
 Response:
 
-{"result":true,"data":{"id":"99999","token":"","name":"*name*","email":"*email*","firstname":"A","lastname":"Person","verified":"1","businessPartnerId":"999999","phone":"","electricHighwayAccount":true,"accountDetails":{"businessPartnerId":"999999","type":"1","title":"0001","firstName":"A","lastName":"Person","emailAddresses":[{"address":"*email*"},{"address":"*email*","primary":"X"}],"telephoneNumbers":null,"houseNumber":"1","street":"AStreet","village":"AVillage","city":"ATown","postcode":"AA1 1AA"},"googleAPIkey":"*key*","updatedTerms":false,"marketing":false}}
+    {"result":true,"data":{"id":"99999","token":"","name":"*name*","email":"*email*","firstname":"A","lastname":"Person","verified":"1","businessPartnerId":"999999","phone":"","electricHighwayAccount":true,"accountDetails":{"businessPartnerId":"999999","type":"1","title":"0001","firstName":"A","lastName":"Person","emailAddresses":[{"address":"*email*"},{"address":"*email*","primary":"X"}],"telephoneNumbers":null,"houseNumber":"1","street":"AStreet","village":"AVillage","city":"ATown","postcode":"AA1 1AA"},"googleAPIkey":"*key*","updatedTerms":false,"marketing":false}}
     
 #### archiveSession
 It is not clear what this does.
