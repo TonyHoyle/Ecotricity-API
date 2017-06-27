@@ -19,8 +19,6 @@ Response:
 
     {"result":true}
 
-<br/>
-
 The API returns true which seems to indicate the email address is free to be registered. Once I've registered my account I get the following.
 
 Request:
@@ -32,7 +30,6 @@ Response:
 
     {"result":false}
 
-<br/>
 #### validateUserName
 This is pretty much the same as the email address endpoint above. Provide it a username and it will tell you if an account exists with that username.
 
@@ -58,7 +55,6 @@ Response:
 
     {"result":false}
 
-<br/>
 #### getAddresses
 Just noting this down but not much to see here, you can look up addresses with postcodes if that's useful.
 
@@ -71,7 +67,6 @@ Response:
 
     {"result":[{"summaryline":"Premier Inn, 112 Portland Street, Manchester, Greater Manchester, M1 4WB","organisation":"Premier Inn","number":"112","premise":"112","street":"Portland Street","posttown":"Manchester","county":"Greater Manchester","postcode":"M1 4WB","line1":"Portland Street","line2":"Premier Inn","line3":"","town":"Manchester"}]}
 
-<br/>
 #### verifyEmail
 I can't figure out what this endpoint does. Any combination of valid or invalid values just returns the same thing.
 
@@ -85,7 +80,6 @@ Response:
 
     {"result":true}
 
-<br/>
 #### createUserEV
 This is called at the end of the account creation process to actually create your user account with the service.
 
@@ -121,11 +115,8 @@ Response:
 
     {"result":true,"data":{"id":"*snip*","name":"ScottHelme","email":"scotthelme@hotmail.com","title":null,"firstname":"scott","lastname":"helme","phone":"","vehicleAdded":{"result":true},"tokenAdded":{"result":true}}}
 
-<br/>
-
 What's *really* interesting in here is the third from last parameter of the POST request to create the account, hasEnergyAccount=0. I wonder if that was change to 1 or true to indicate that I do have an energy account if I'd get the free charging?..
 
-<br/>
 #### login
 Called upon login.  No longer used with v2 as this API has switched to oauth, but still works.
 
@@ -140,7 +131,6 @@ Response:
 
     {"result":true,"data":{"id":"*snip*","token":"","name":"ScottHelme","email":"scotthelme@hotmail.com","firstname":"scott","lastname":"helme","verified":"1","businessPartnerId":"*snip*","phone":"","electricHighwayAccount":true,"accountDetails":{"businessPartnerId":"*snip*","type":"1","firstName":"scott","lastName":"helme","emailAddresses":[{"address":"scotthelme@hotmail.com"},{"address":"scotthelme@hotmail.com","primary":"X"}],"street":"*snip*","village":"*snip*","city":"*snip*","postcode":"*snip*","telephoneNumbers":null},"googleAPIkey":"*snip*"}}
 
-<br/>
 #### registerNotifications
 Called after login.
 
@@ -171,7 +161,6 @@ Response:
 
     {"result":[{"lastDigits":"*snip*","cardType":"Visa (VISA)","cardId":"000001","cardIcon":"visa"}]}
 
-<br/>
 #### getTransactionList
 Viewing historic transactions on the account.
 
@@ -179,7 +168,7 @@ Request:
 
     POST https://www.ecotricity.co.uk/api/ezx/v1/getTransactionList HTTP/1.1
     identifier=ScottHelme
-    &password=*snip*
+    &access_token=*snip*
 
 Response:
 
@@ -187,7 +176,6 @@ Response:
 
 This is actually a list of all transactions attempted whether or not were charged - this makes it less than useful.
 
-<br/>
 #### getUserVehicleList
 Same again, this just lists out the vehicles registered to your account. It seems to be used for selecting chargers with the appropriate connector for your car.
 
@@ -201,7 +189,6 @@ Response:
 
     {"result":[{"id":"0000001069","registration":"*snip*","specification":"(2011-)","model":"Leaf","make":"Nissan"}]}
 
-<br/>
 #### getLocationDetails
 Does what it says on the tin.
 
@@ -217,7 +204,6 @@ Response:
 
     {"result":{"pump":[{"status":"Swipe card only","latitude":"53.72297","longitude":"-2.486165","name":"BP Ewood","postcode":"BB2 4LA","location":"Bolton Road Blackburn","locationId":"147","pumpId":"1257","lastHeartbeat":"","pumpModel":"AC (RAPID) \/ DC (CHAdeMO)","connector":[{"compatible":"X","type":"DC (CHAdeMO)","status":"Swipe card only","name":"DC (CHADEMO)","connectorId":"1","sessionDuration":"20"},{"compatible":"","type":"AC (RAPID)","status":"Swipe card only","name":"AC (RAPID)","connectorId":"2","sessionDuration":"20"}]}]}}
 
-<br/>
 #### getPumpList
 Lists pumps close to your location using lat/lon.
 
@@ -371,7 +357,7 @@ Request:
     POST https://www.ecotricity.co.uk/api/ezx/v1/changeEmail HTTP/1.1
     newEmail=*snip*
     &identifier=ScottHelme
-    &password=*snip*
+    &access_token=*snip*
 
 Response:
 
@@ -390,7 +376,7 @@ Request:
 
     POST https://www.ecotricity.co.uk/api/ezx/v1/registerVehicle HTTP/1.1
     vehicleModel=Leaf
-    &password=*snip*
+    &access_token=*snip*
     &vehicleMake=Nissan
     &identifier=ScottHelme
     &vehicleRegistration=MY64ABC
@@ -408,7 +394,7 @@ Request:
 
     POST https://www.ecotricity.co.uk/api/ezx/v1/unregisterVehicle HTTP/1.1
     vehicleSpecification=%282011-%29
-    &password=*snip*
+    &access_token=*snip*
     &vehicleModel=Leaf
     &identifier=ScottHelme
     &vehicleRegistration=MY64ABC
@@ -428,7 +414,7 @@ Request:
     POST https://www.ecotricity.co.uk/api/ezx/v1/changePassword HTTP/1.1
     newPassword=*snip*
     &identifier=ScottHelme
-    &password=*snip*
+    &access_token=*snip*
 
 Response:
 
