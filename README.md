@@ -291,7 +291,6 @@ Response:
     {"result":true}
     {"result":false, "message":"*reason*"}
 
-<br/>
 #### forgottenPassword
 Triggered when you request a password reset.
 
@@ -305,11 +304,8 @@ Response:
 
     {"result":{"hashkey":"*snip*"}}
 
-<br/>
-
 You need to hit the following URL to activate the token for the next step: https://www.ecotricity.co.uk/ecovalidate/token/(hashkey)
 
-<br/>
 #### getPasswordToken
 Triggered when you hit forgotten password in the app, the hashkey value is returned in the previous API call.
 
@@ -323,19 +319,14 @@ Response:
 
     {"result":{"success":false,"error":"TOKEN_NOT_VALIDATED"}}
 
-<br/>
-
 Once you have clicked the activation link in the email.
 
 Response:
 
     {"result":{"success":true,"hashkey":"*snip*"}}
 
-<br/>
-
 Note: The hashkey provided here is a new value.
 
-<br/>
 #### usePasswordToken
 Final step in the password reset process, provide the new password.
 
@@ -348,7 +339,6 @@ Request:
     &forgotpassword_hash_key=*snip-hashkey-getPasswordToken*
     &confirm_password=*snip*
 
-<br/>
 #### changeEmail
 Used to change email address on account.
 
@@ -364,11 +354,8 @@ Response:
     {"result":true}
     {"result":false, "message":"*reason*"}
 
-<br/>
-
 The email validation link is https://www.ecotricity.co.uk/ecovalidate/change-email/(token)
 
-<br/>
 #### registerVehicle
 Add a new car to your account.
 
@@ -421,7 +408,6 @@ Response:
     {"result":true}
     {"result":false, "message":"*reason*"}
 
-<br/>
 #### startChargeSession
 Used to actually start a charging session.
 
@@ -444,7 +430,6 @@ Response:
     {"result":false, "message":"*reason*"}
     {"result":false, "soaperror":true}
 
-<br/>
 #### stopChargeSession
 Used to stop a charging session early.
 
@@ -462,7 +447,7 @@ Response:
 
     {"result":true} 
     {"result":false, "message":"*reason*"}
-<br/>
+
 #### getChargeStatus
 Used to get the status of a charge session.  This has two forms.  The second form is used at app startup to find out if any charges are running.
 
@@ -495,8 +480,6 @@ Response:
     {"result":{"status":"Retry","message":"Sorry there's been problem please disconnect your vehicle and try again.","completed":false,"cost":"","sessionId":"00000228","pumpId":"1263","pumpConnector":"1"}}
     
 This is a failed charge
-
-<br />
 
 Response:
 
