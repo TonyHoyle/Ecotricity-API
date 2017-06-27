@@ -1,3 +1,6 @@
+* auto-gen TOC:
+{:toc}
+
 # Ecotricity-API
 These are my findings when exploring the Ecotricity API for their new 'charging for charging' system.
 
