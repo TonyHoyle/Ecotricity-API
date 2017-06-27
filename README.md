@@ -567,7 +567,7 @@ Response:
 
     {"result":true}
 
-####Other bits
+#### Other bits
 There is a list of what seems to be all supported cars here:
 https://www.ecotricity.co.uk/api/ezx/v1/getVehicleList
 
