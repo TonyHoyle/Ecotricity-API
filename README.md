@@ -532,13 +532,7 @@ Response:
     0
 
 #### user
-This is part of the oauth login sequence to the electric highway.  There are two request types, one for initial login and one for a returning user.
-
-Note the response isn't pure json.  This may be a bug at the server end.
-
-The client id and client secret are fixed:
-client_secret = 1363c5f65ec09a2458788e75717a51403b5edd09ae5a40063a53960801305c97
-client_id = 2a66896a0ee4aff229fca61772308e2db24a690316a44bf892d510671ef7f834
+This is called after token to retrieve user details as the app starts up.
 
 Request:
 
