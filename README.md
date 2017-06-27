@@ -1,9 +1,13 @@
 # Ecotricity-API
 These are my findings when exploring the Ecotricity API for their new 'charging for charging' system.
 
-<br/>
+##### Updates for version 2.
 
-####/checkDuplicateEmail
+The version 2 API no longer repeatedly sends the username and password as part of the normal conversation, and instead uses access tokens.  However you can still use passwords as there is backward compatibility with version 1.  
+
+There is first a call to the 'token' function which generates the access token required, then a call to 'user' to validate the password.
+
+#### checkDuplicateEmail
 This one doesn't look like it's a particularly good idea, it tells you whether or not a particular email address has an account.
 
 Request:
@@ -29,7 +33,7 @@ Response:
     {"result":false}
 
 <br/>
-####/validateUserName
+#### validateUserName
 This is pretty much the same as the email address endpoint above. Provide it a username and it will tell you if an account exists with that username.
 
 Request:
@@ -55,7 +59,7 @@ Response:
     {"result":false}
 
 <br/>
-####/getAddresses
+#### getAddresses
 Just noting this down but not much to see here, you can look up addresses with postcodes if that's useful.
 
 Request:
@@ -68,7 +72,7 @@ Response:
     {"result":[{"summaryline":"Premier Inn, 112 Portland Street, Manchester, Greater Manchester, M1 4WB","organisation":"Premier Inn","number":"112","premise":"112","street":"Portland Street","posttown":"Manchester","county":"Greater Manchester","postcode":"M1 4WB","line1":"Portland Street","line2":"Premier Inn","line3":"","town":"Manchester"}]}
 
 <br/>
-####/verifyEmail
+#### verifyEmail
 I can't figure out what this endpoint does. Any combination of valid or invalid values just returns the same thing.
 
 Request:
@@ -82,7 +86,7 @@ Response:
     {"result":true}
 
 <br/>
-####/createUserEV
+#### createUserEV
 This is called at the end of the account creation process to actually create your user account with the service.
 
 Request:
@@ -122,8 +126,8 @@ Response:
 What's *really* interesting in here is the third from last parameter of the POST request to create the account, hasEnergyAccount=0. I wonder if that was change to 1 or true to indicate that I do have an energy account if I'd get the free charging?..
 
 <br/>
-####/login
-Called upon login.
+#### login
+Called upon login.  No longer used with v2 as this API has switched to oauth, but still works.
 
 Request:
 
@@ -137,38 +141,38 @@ Response:
     {"result":true,"data":{"id":"*snip*","token":"","name":"ScottHelme","email":"scotthelme@hotmail.com","firstname":"scott","lastname":"helme","verified":"1","businessPartnerId":"*snip*","phone":"","electricHighwayAccount":true,"accountDetails":{"businessPartnerId":"*snip*","type":"1","firstName":"scott","lastName":"helme","emailAddresses":[{"address":"scotthelme@hotmail.com"},{"address":"scotthelme@hotmail.com","primary":"X"}],"street":"*snip*","village":"*snip*","city":"*snip*","postcode":"*snip*","telephoneNumbers":null},"googleAPIkey":"*snip*"}}
 
 <br/>
-####/registerNotifications
+#### registerNotifications
 Called after login.
 
 Request:
 
     POST https://www.ecotricity.co.uk/api/ezx/v1/registerNotifications HTTP/1.1
-    deviceId=*snip*
-    &password=*snip*
+    access_token=*snip*
+    &deviceType=android
     &app=com.ecotricity.electrichighway
     &identifier=ScottHelme
-    &deviceType=android
+    &appId=com.ecotricity.electrichighway
+    &deviceId=*snip*
 
 Response:
 
-    {"result":false}
+    {"deviceId":"*snip*","deviceType":"android","app":"com.ecotricity.electrichighway","result":true}
 
-<br/>
-####/getCardList
+#### getCardList
 This simply lists out the payment cards associated on your account.
 
 Request:
 
     POST https://www.ecotricity.co.uk/api/ezx/v1/getCardList HTTP/1.1
     identifier=ScottHelme
-    &password=*snip*
+    &access_token=*snip*  
 
 Response:
 
     {"result":[{"lastDigits":"*snip*","cardType":"Visa (VISA)","cardId":"000001","cardIcon":"visa"}]}
 
 <br/>
-####/getTransactionList
+#### getTransactionList
 Viewing historic transactions on the account.
 
 Request:
@@ -184,21 +188,21 @@ Response:
 This is actually a list of all transactions attempted whether or not were charged - this makes it less than useful.
 
 <br/>
-####/getUserVehicleList
+#### getUserVehicleList
 Same again, this just lists out the vehicles registered to your account. It seems to be used for selecting chargers with the appropriate connector for your car.
 
 Request:
 
     POST https://www.ecotricity.co.uk/api/ezx/v1/getUserVehicleList HTTP/1.1
     identifier=ScottHelme
-    &password=*snip*
+    &access_token=*snip*
 
 Response:
 
     {"result":[{"id":"0000001069","registration":"*snip*","specification":"(2011-)","model":"Leaf","make":"Nissan"}]}
 
 <br/>
-####/getLocationDetails
+#### getLocationDetails
 Does what it says on the tin.
 
 Request:
@@ -214,7 +218,7 @@ Response:
     {"result":{"pump":[{"status":"Swipe card only","latitude":"53.72297","longitude":"-2.486165","name":"BP Ewood","postcode":"BB2 4LA","location":"Bolton Road Blackburn","locationId":"147","pumpId":"1257","lastHeartbeat":"","pumpModel":"AC (RAPID) \/ DC (CHAdeMO)","connector":[{"compatible":"X","type":"DC (CHAdeMO)","status":"Swipe card only","name":"DC (CHADEMO)","connectorId":"1","sessionDuration":"20"},{"compatible":"","type":"AC (RAPID)","status":"Swipe card only","name":"AC (RAPID)","connectorId":"2","sessionDuration":"20"}]}]}}
 
 <br/>
-####/getPumpList
+#### getPumpList
 Lists pumps close to your location using lat/lon.
 
 Request:
@@ -230,47 +234,65 @@ Response:
 
     {"result":[{"latitude":"55.219691","longitude":"-3.410582","name":"Annandale Water Services","postcode":"DG11 1HD","location":"A74(M) Jct 16","locationId":"111","pumpId":["1201"],"pumpModel":"AC (RAPID) \/ DC (CHAdeMO)","available":false,"swipeOnly":true,"distance":17.682033646467}, ... }
 
-<br/>
-
 That response is a much larger list that I've cut down. It also seems to tell you your distance from the charger.
 
-<br/>
-####/getPumpConnectors
+#### getPumpConnectors
 This lists the available connectors on a charger and seems to require auth so that it can tell which which (if any) connector is for your car.
+
+This API no longer returns the price of the connection (the field is still there but is always null).  That is now provided by the quote function.
 
 Request:
 
     POST https://www.ecotricity.co.uk/api/ezx/v1/getPumpConnectors HTTP/1.1
-    password=*snip*
-    &deviceId=*snip*
-    &vehicleId=*snip*
-    &vehicleMake=Nissan
+    access_token=*snip*
+    &pumpId=1106
     &identifier=ScottHelme
+    &appId=com.ecotricity.electrichighway
     &vehicleModel=Leaf
-    &pumpId=1257
+    &vehicleId=*snip*
+    &deviceId=*snip*
+    &vehicleMake=Nissan
 
 Response:
 
-    {"result":{"status":"Swipe card only","latitude":"53.72297","longitude":"-2.486165","name":"BP Ewood","postcode":"BB2 4LA","location":"Bolton Road Blackburn","pumpId":"1257","connector":[{"compatible":"X","type":"DC (CHAdeMO)","status":"Swipe card only","name":"DC (CHADEMO)","connectorId":"1","sessionDuration":"20"},{"compatible":"","type":"AC (RAPID)","status":"Swipe card only","name":"AC (RAPID)","connectorId":"2","sessionDuration":"20"}],"connectorCost":[{"connectorId":"1","totalCost":"5.00 ","baseCost":"5.00 ","discountEcoGrp":"0.00 ","discountMultiChg":"0.00 ","surcharge":"0.00 ","freecost":"","currency":"GBP","sessionId":"00000095","sessionDuration":"20"},{"connectorId":"2","totalCost":"5.00 ","baseCost":"5.00 ","discountEcoGrp":"0.00 ","discountMultiChg":"0.00 ","surcharge":"0.00 ","freecost":"","currency":"GBP","sessionId":"00000096","sessionDuration":"20"}]}}
+    {"result":{"status":"Available","latitude":"53.567784","longitude":"-2.230268","name":"Birch Services","postcode":"OL10 2QH","location":"M62 Westbound Jct 18\/19","pumpId":"1106","connector":[{"compatible":"X","type":"DC (CHAdeMO)","status":"Available","name":"DC (CHADEMO)","connectorId":"1","sessionDuration":"30"},{"compatible":"","type":"AC (RAPID)","status":"Available","name":"AC (RAPID)","connectorId":"2","sessionDuration":"30"},{"compatible":"","type":"CCS","status":"Available","name":"CCS","connectorId":"3","sessionDuration":"30"}],"connectorCost":null}}
 
-<br/>
+If the charger can be used by your car you can see the "compatible":"X" in the response for the appropriate charger.
 
-If the charger can be used by your car you can see the "compatible":"X" in the response for the appropriate charger. It's interesting to note there is also a "discountEcoGrp" and "discountMultiChg" value set to 0.
+Note sessionDuration still reads 30 minutes even though 45 minutes is now standard.  This appears to be a bug.
 
-<br/>
-####/getSettings
-This POST request has no params.
+#### quote
+
+Returns a personalised charge quote to the user.  Doesn't appear to be a per-pump value.
+
+Request:
+
+    POST https://www.ecotricity.co.uk/api/ezx/v1/quote HTTP/1.1
+    access_token=*snip*
+    &identifier=TonyHoyle
+    &vehicleId=*snip*
+    &deviceId=*snip*
+    &appId=com.ecotricity.electrichighway
+    
+Response:
+
+    {"result":{"sessionPricing":[{"title":"Free for Ecotricity customers","pricingData":[{"title":"Free charges used","value":"7 of 52"},{"title":"To be used by:","value":"09\/03\/2018"}]}],"fixed":"0.00 ","variable":{"unitOfMeasurement":"kWh","value":"0.00"},"sessionId":"00429497","sessionDuration":"45"}}
+
+#### getSettings
 
 Request:
 
     POST https://www.ecotricity.co.uk/api/ezx/v1/getSettings HTTP/1.1
+    deviceId=*snip*
+    appId=com.ecotricity.electrichighway
 
 Response:
 
-    {"result":true,"autocomplete":"1","amplitude":"1","google_maps_key":"*snip*","amplitude_key":"*chip*","defaultChargeCopy":"A charging session is \u00a36 for 30 minutes and free for Ecotricity energy customers.","defaultGuestChargeCopy":"Charging sessions cost \u00a36. We won't take payment until you've successfully finished your charge session.\r\n"}
-
-<br/>
-####/forgottenUsername
+    {"result":true,"autocomplete":"1","amplitude":"1","google_maps_key":"..","amplitude_key":"..","defaultChargeCopy":"A charging session is \u00a36 for 30 minutes and free for Ecotricity energy customers.","defaultGuestChargeCopy":"Charging costs just \u00a30.17 per kWh, plus a \u00a33 connection fee. We won't take payment until you've successfully finished your charge session.","quoteHeading":"Your charge session","quoteCopy":"Here's how your charge is calculated. Maximum charge session is 45 minutes.","maintenance":"It\u2019s currently free to charge your vehicle on all of our Electric Highway pumps while we carry out some maintenance work. Just follow the pump's on-screen instructions to charge up.","maintenanceHeading":"We\u2019re tweaking the network\u2026","maintenanceEnabled":"0","marketingCopy":"Would you like us to keep you up to date on what the Ecotricity Group is doing? We won't pass your details on to anyone else","terms":{"title":"Terms EH","terms":"...","app_version":"1"}}
+    
+This is consiterably expanded from the original text but it's not clear if the app uses most of it.
+    
+#### forgottenUsername
 Triggered when you click forgotten username in the app.
 
 Request:
@@ -284,7 +306,7 @@ Response:
     {"result":false, "message":"*reason*"}
 
 <br/>
-####/forgottenPassword
+#### forgottenPassword
 Triggered when you request a password reset.
 
 Request:
@@ -302,7 +324,7 @@ Response:
 You need to hit the following URL to activate the token for the next step: https://www.ecotricity.co.uk/ecovalidate/token/(hashkey)
 
 <br/>
-####/getPasswordToken
+#### getPasswordToken
 Triggered when you hit forgotten password in the app, the hashkey value is returned in the previous API call.
 
 Request:
@@ -328,7 +350,7 @@ Response:
 Note: The hashkey provided here is a new value.
 
 <br/>
-####/usePasswordToken
+#### usePasswordToken
 Final step in the password reset process, provide the new password.
 
 Request:
@@ -341,7 +363,7 @@ Request:
     &confirm_password=*snip*
 
 <br/>
-####/changeEmail
+#### changeEmail
 Used to change email address on account.
 
 Request:
@@ -361,7 +383,7 @@ Response:
 The email validation link is https://www.ecotricity.co.uk/ecovalidate/change-email/(token)
 
 <br/>
-####/registerVehicle
+#### registerVehicle
 Add a new car to your account.
 
 Request:
@@ -379,8 +401,7 @@ Response:
     {"result":true}
     {"result":false, "message":"*reason*"}
 
-<br/>
-####/unregisterVehicle
+#### unregisterVehicle
 Remove a vehicle from your account.
 
 Request:
@@ -399,8 +420,7 @@ Response:
     {"result":true}
     {"result":false, "message":"*reason*"}
 
-<br/>
-####/changePassword
+#### changePassword
 Used to change password in your account. Just provide old password and new password.
 
 Request:
@@ -416,34 +436,36 @@ Response:
     {"result":false, "message":"*reason*"}
 
 <br/>
-####/startChargeSession
+#### startChargeSession
 Used to actually start a charging session.
 
 Request:
 
     POST https://www.ecotricity.co.uk/api/ezx/v1/startChargeSession HTTP/1.1
-    password=*snip*
-    &deviceId=*snip*
-    &identifier=ScottHelme
+    access_token=*snip*
+    &pumpId=1106
+    &identifier=TonyHoyle
     &pumpConnector=1
-    &pumpId=1263
-    &cv2=*snip*
-    &cardId=000001
-    &sessionId=00000228
+    &cardId=0
+    &appId=com.ecotricity.electrichighway
+    &sessionId=0000001
+    &deviceId=*snip*
+    &cv2=
 
 Response:
 
     {"result":true}
     {"result":false, "message":"*reason*"}
+    {"result":false, "soaperror":true}
 
 <br/>
-####/stopChargeSession
+#### stopChargeSession
 Used to stop a charging session early.
 
 Request:
 
     POST https://www.ecotricity.co.uk/api/ezx/v1/stopChargeSession HTTP/1.1
-    password=*snip*
+    access_token=*snip*
     &deviceId=*snip*
     &sessionId=00011520
     &identifier=ScottHelme
@@ -455,7 +477,7 @@ Response:
     {"result":true} 
     {"result":false, "message":"*reason*"}
 <br/>
-####/getChargeStatus
+#### getChargeStatus
 Used to get the status of a charge session.  This has two forms.  The second form is used at app startup to find out if any charges are running.
 
 Request type 1:
@@ -471,17 +493,16 @@ Request type 1:
 Request type 2:
 
     POST https://www.ecotricity.co.uk/api/ezx/v1/getChargeStatus HTTP/1.1
-    identifier=ScottHelme
-    &password=*snip*
+    access_token=*snip*
+    &identifier=TonyHoyle
     &deviceId=*snip*
+    &appId=com.ecotricity.electrichighway
 
 Response:
 
-    {"result":{"status":"Awaiting Start","message":"Awaiting Start","completed":false,"cost":"","sessionId":"00000228","pumpId":"1263","pumpConnector":"1"}}
+    {"result":{"status":"Completed","message":"Your charge session has finished. Please return and check your charger.","completed":true,"cost":"","sessionId":"00000228","started":"20170422123928","finished":"20170422131142","pumpId":"1102","pumpConnector":"1","createdDate":"20170422","createdTime":"123828"}}
 
-<br/>
-
-The charge here was never actually initiated. 
+This is a completed charge 
 
 Response:
 
@@ -505,7 +526,78 @@ Response:
 
 This is a completed charge.  The cost is now filled as is the finish time.  The created date and time may be invoice related - after this message is received an invoice will shortly arrive via email.
 
-<br/>
+#### token
+This is part of the oauth login sequence to the electric highway.  There are two request types, one for initial login and one for a returning user.
+
+Note the response isn't pure json.  This may be a bug at the server end.
+
+The client id and client secret are fixed:
+client_secret = 1363c5f65ec09a2458788e75717a51403b5edd09ae5a40063a53960801305c97
+client_id = 2a66896a0ee4aff229fca61772308e2db24a690316a44bf892d510671ef7f834
+
+Request 1 (login):
+
+    POST https://www.ecotricity.co.uk/api/ezx/v1/token HTTP/1.1
+    password=<snip>
+    &grant_type=password
+    &appId=com.ecotricity.electrichighway
+    &client_secret=<client secret>
+    &deviceId=<device id>
+    &client_id=<client id>
+    &username=<snip>
+    
+Request 2 (return):
+
+    POST https://www.ecotricity.co.uk/api/ezx/v1/token HTTP/1.1
+    refresh_token=<token>
+    &client_secret=<client secret>
+    &grant_type=refresh_token
+    &deviceId=<device id>
+    &client_id=<client id>
+    &appId=com.ecotricity.electrichighway
+    
+Response:
+
+    ac
+    {"access_token":"..","expires_in":86400,"token_type":"Bearer","scope":null,"refresh_token":".."}
+    0
+
+#### user
+This is part of the oauth login sequence to the electric highway.  There are two request types, one for initial login and one for a returning user.
+
+Note the response isn't pure json.  This may be a bug at the server end.
+
+The client id and client secret are fixed:
+client_secret = 1363c5f65ec09a2458788e75717a51403b5edd09ae5a40063a53960801305c97
+client_id = 2a66896a0ee4aff229fca61772308e2db24a690316a44bf892d510671ef7f834
+
+Request:
+
+    POST https://www.ecotricity.co.uk/api/ezx/v1/user HTTP/1.1
+    access_token=<token from token call>
+    &identifier=<username>
+    &electricHighway=true
+    &deviceId=<device id>
+    &appId=com.ecotricity.electrichighway
+    
+Response:
+
+{"result":true,"data":{"id":"99999","token":"","name":"*name*","email":"*email*","firstname":"A","lastname":"Person","verified":"1","businessPartnerId":"999999","phone":"","electricHighwayAccount":true,"accountDetails":{"businessPartnerId":"999999","type":"1","title":"0001","firstName":"A","lastName":"Person","emailAddresses":[{"address":"*email*"},{"address":"*email*","primary":"X"}],"telephoneNumbers":null,"houseNumber":"1","street":"AStreet","village":"AVillage","city":"ATown","postcode":"AA1 1AA"},"googleAPIkey":"*key*","updatedTerms":false,"marketing":false}}
+    
+#### archiveSession
+It is not clear what this does.
+
+Request:
+
+    POST https://www.ecotricity.co.uk/api/ezx/v1/archiveSession HTTP/1.1
+    deviceId=*snip*
+    &sessionId=00000111
+    &appId=com.ecotricity.electrichighway
+    
+Response:
+
+    {"result":true}
+
 ####Other bits
 There is a list of what seems to be all supported cars here:
 https://www.ecotricity.co.uk/api/ezx/v1/getVehicleList
