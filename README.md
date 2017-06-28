@@ -249,11 +249,11 @@ Note sessionDuration still reads 30 minutes even though 45 minutes is now standa
 
 #### quote
 
-Returns a personalised charge quote to the user.  Doesn't appear to be a per-pump value.
+Returns a personalised charge quote to the user.  This call has pump and connector values in the URL (which is at the time of writing the only API call to do so).
 
 Request:
 
-    POST https://www.ecotricity.co.uk/api/ezx/v1/quote HTTP/1.1
+    POST https://www.ecotricity.co.uk/api/ezx/v1/pump/1106/connector/1/quote HTTP/1.1
     access_token=*snip*
     &identifier=TonyHoyle
     &vehicleId=*snip*
